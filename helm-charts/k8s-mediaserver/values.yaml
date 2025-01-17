@@ -11,7 +11,7 @@ general:
   #UID to run the process with
   puid: 1000
   # GID to run the process with
-  pgid: 1000
+  pgid: 1004
   # Persistent storage selections and pathing
   storage:
     customVolume: false # set to true if not using a PVC (must provide volume below)
@@ -82,8 +82,8 @@ radarr:
   ingress:
     enabled: true
     annotations: {}
-    hosts: []  # Add hosts array instead of single path
-    path: /radarr  # Default path if no hosts specified
+    hosts: [] # Add hosts array instead of single path
+    path: /radarr # Default path if no hosts specified
     tls:
       enabled: false
       secretName: ""
