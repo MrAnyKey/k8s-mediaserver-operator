@@ -61,7 +61,7 @@ data:
         "rpc-host-whitelist-enabled": false,
         "rpc-password": {{ .Values.transmission.config.auth.password | quote }} ,
         "rpc-port": 9091,
-        "rpc-url": "{{ .Values.transmission.ingress.path }}/",
+        "rpc-url": "{{ .Values.transmission.ingress.path | default "/" }}/",
         "rpc-username": {{ .Values.transmission.config.auth.username | quote }},
         "rpc-whitelist": "127.0.0.1",
         "rpc-whitelist-enabled": false,
@@ -355,21 +355,44 @@ metadata:
 spec:
 {{- if .Values.transmission.ingress.tls.enabled }}
   tls:
+  {{- if .Values.transmission.ingress.hosts }}
+  {{- range .Values.transmission.ingress.hosts }}
     - hosts:
-        - {{ .Values.general.ingress_host | quote }}
-      secretName: {{ .Values.transmission.ingress.tls.secretName }}
+        - {{ .host | quote }}
+      secretName: {{ .tlsSecret | default $.Values.transmission.ingress.tls.secretName }}
+  {{- end }}
+  {{- else }}
+    - hosts:
+        - {{ $.Values.general.ingress_host | quote }}
+      secretName: {{ $.Values.transmission.ingress.tls.secretName }}
+  {{- end }}
 {{ end }}
   ingressClassName: {{ .Values.general.ingress.ingressClassName }}
   rules:
-    - host: {{ .Values.general.ingress_host | quote }}
+  {{- if .Values.transmission.ingress.hosts }}
+  {{- range .Values.transmission.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: {{ .Values.transmission.ingress.path }}
+          - path: {{ .path | default "/" }}
             pathType: Prefix
             backend:
               service:
                 name: transmission
                 port:
-                  number: {{ .Values.transmission.service.utp.port }}
-{{ end }}
+                  number: {{ $.Values.transmission.service.utp.port }}
+  {{- end }}
+  {{- else }}
+    - host: {{ $.Values.general.ingress_host | quote }}
+      http:
+        paths:
+          - path: {{ $.Values.transmission.ingress.path | default "/" }}
+            pathType: Prefix
+            backend:
+              service:
+                name: transmission
+                port:
+                  number: {{ $.Values.transmission.service.utp.port }}
+  {{- end }}
+  {{- end }}
 {{ end }}

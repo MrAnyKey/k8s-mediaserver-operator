@@ -155,6 +155,7 @@ transmission:
   ingress:
     enabled: true
     annotations: {}
+    hosts: {}
     path: /transmission
     tls:
       enabled: false
