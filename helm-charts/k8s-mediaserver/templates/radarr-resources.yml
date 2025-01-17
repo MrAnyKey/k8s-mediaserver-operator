@@ -246,6 +246,6 @@ spec:
                 port:
                   number: {{ $.Values.radarr.service.port }}
   {{- end }}
-{{ end }}
-{{ end }}
-{{ end }}
+  {{- end }}
+{{ end }}  {{/* end of .Values.radarr.ingress.enabled */}}
+{{ end }}  {{/* end of .Values.radarr.enabled */}}
