@@ -207,21 +207,45 @@ metadata:
 spec:
 {{- if .Values.radarr.ingress.tls.enabled }}
   tls:
+  {{- if .Values.radarr.ingress.hosts }}
+  {{- range .Values.radarr.ingress.hosts }}
     - hosts:
-        - {{ .Values.general.ingress_host | quote }}
-      secretName: {{ .Values.radarr.ingress.tls.secretName }}
+        - {{ .host | quote }}
+      secretName: {{ .tlsSecret | default $.Values.radarr.ingress.tls.secretName }}
+  {{- end }}
+  {{- else }}
+    - hosts:
+        - {{ $.Values.general.ingress_host | quote }}
+      secretName: {{ $.Values.radarr.ingress.tls.secretName }}
+  {{- end }}
 {{ end }}
   ingressClassName: {{ .Values.general.ingress.ingressClassName }}
   rules:
-    - host: {{ .Values.general.ingress_host | quote }}
+  {{- if .Values.radarr.ingress.hosts }}
+  {{- range .Values.radarr.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: {{ .Values.radarr.ingress.path }}
+          - path: {{ .path | default "/" }}
             pathType: Prefix
             backend:
               service:
                 name: radarr
                 port:
-                  number: {{ .Values.radarr.service.port }}
+                  number: {{ $.Values.radarr.service.port }}
+  {{- end }}
+  {{- else }}
+    - host: {{ $.Values.general.ingress_host | quote }}
+      http:
+        paths:
+          - path: {{ $.Values.radarr.ingress.path | default "/" }}
+            pathType: Prefix
+            backend:
+              service:
+                name: radarr
+                port:
+                  number: {{ $.Values.radarr.service.port }}
+  {{- end }}
+{{ end }}
 {{ end }}
 {{ end }}

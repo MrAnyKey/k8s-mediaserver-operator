@@ -82,7 +82,8 @@ radarr:
   ingress:
     enabled: true
     annotations: {}
-    path: /radarr
+    hosts: []  # Add hosts array instead of single path
+    path: /radarr  # Default path if no hosts specified
     tls:
       enabled: false
       secretName: ""
